@@ -10,6 +10,7 @@ parent_dir = os.path.dirname(current_dir)
 if parent_dir not in sys.path:
     sys.path.append(parent_dir)
 
+
 import models
 import storage
 import json
@@ -260,8 +261,8 @@ class Dashboard(ctk.CTk):
 
 
     def open_support_chat(self):
-        from support_manager import SupportManager
-        manager = SupportManager()
+        from ui_windows import support_manager
+        manager = support_manager.SupportManager()
         
         success, result = manager.try_start_chat(self.current_client_id)
         
