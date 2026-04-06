@@ -209,6 +209,22 @@ class Dashboard(ctk.CTk):
             command=self.logout
         )
         self.logout_button.grid(row=2, column=1, padx=10, pady=10)
+        
+        self.support_button = ctk.CTkButton(
+            self.main_frame, 
+            text="Contact Support", 
+            width=170,             
+            height=80,             
+            corner_radius=10,       
+            fg_color="transparent", 
+            border_width=2,         
+            border_color="#3B82F6", # Different color to stand out
+            text_color="white",     
+            font=("Inter", 14),   
+            hover_color="#1F1F1F", 
+            command=self.open_support_chat
+        )
+        self.support_button.grid(row=3, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
     
 
     def on_closing(self):
@@ -239,6 +255,75 @@ class Dashboard(ctk.CTk):
         # Apply to the correct window
         win.geometry(f"{width}x{height}+{x}+{y}")
 
+#! /////////////////////////////////////////////////////////////////
+#* here I start the mongoDB intergration
+
+
+    def open_support_chat(self):
+        from support_manager import SupportManager
+        manager = SupportManager()
+        
+        success, result = manager.try_start_chat(self.current_client_id)
+        
+        if not success:
+            # result is the error message here
+            from tkinter import messagebox
+            messagebox.showwarning("Busy", result)
+            return
+
+        session_id = result
+        chat_win = ctk.CTkToplevel(self)
+        chat_win.title(f"Support - {session_id}")
+        chat_win.geometry("400x500")
+        chat_win.attributes("-topmost", True)
+
+        chat_display = ctk.CTkTextbox(chat_win, width=380, height=350, state="disabled")
+        chat_display.pack(pady=10, padx=10)
+
+        msg_entry = ctk.CTkEntry(chat_win, placeholder_text="Type help request...", width=280)
+        msg_entry.pack(side="left", padx=(10, 5), pady=10)
+
+        def send():
+            val = msg_entry.get()
+            if val:
+                manager.send_message(session_id, self.current_client_id, val)
+                msg_entry.delete(0, 'end')
+
+        ctk.CTkButton(chat_win, text="Send", width=80, command=send).pack(side="left", padx=5)
+
+        def refresh():
+            if chat_win.winfo_exists():
+                # 1. Fetch current session data from MongoDB
+                session = manager.chats.find_one({"session_id": session_id})
+                
+                # 2. Check if the admin has toggled is_busy to False
+                if session and not session.get("is_busy"):
+                    from tkinter import messagebox
+                    messagebox.showinfo("Support", "The admin has ended this support session. Thank you!")
+                    chat_win.destroy()
+                    return # Stop the refresh loop
+
+                # 3. Otherwise, update the messages as usual
+                msgs = session.get("messages", []) if session else []
+                chat_display.configure(state="normal")
+                chat_display.delete("1.0", "end")
+                for m in msgs:
+                    sender = "You" if str(m['sender']) == str(self.current_client_id) else "Admin"
+                    chat_display.insert("end", f"[{m['timestamp']}] {sender}: {m['text']}\n")
+                
+                chat_display.configure(state="disabled")
+                chat_display.see("end")
+                chat_win.after(500, refresh)
+
+        refresh()
+        def on_user_close_chat():
+            if messagebox.askyesno("Confirm", "Close chat? This will end your support session."):
+                manager.end_chat(session_id)
+                chat_win.destroy()
+
+        chat_win.protocol("WM_DELETE_WINDOW", on_user_close_chat)
+
+#! /////////////////////////////////////////////////////////////////
 
     def popup_win(self,title, message):
         popup_win = ctk.CTkToplevel(self)

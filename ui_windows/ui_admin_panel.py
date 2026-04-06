@@ -160,9 +160,10 @@ class AdminPanel(ctk.CTk):
         def send_response():
             text = msg_entry.get()
             if text:
-                # Use the Admin's ID as the sender
+                
                 manager.send_message(session_id, self.admin_id, text)
                 msg_entry.delete(0, 'end')
+                refresh_messages()  
 
         send_btn = ctk.CTkButton(input_frame, text="Send", width=70, command=send_response)
         send_btn.pack(side="left")
