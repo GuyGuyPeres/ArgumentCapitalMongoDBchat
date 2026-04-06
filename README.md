@@ -1,4 +1,4 @@
-# Argument Capital Project 🚀
+# Argument Capital Project (With MongoDB Integration) 🚀
 
 [![Project Status](https://img.shields.io/badge/status-active-success)](https://github.com/)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
@@ -161,14 +161,8 @@ Key dependencies include:
 See `requirements.txt` for the complete list.
 
 
-
 ---
 
-## 📄 License
-
-This project is licensed under the MIT License.
-
----
 
 ## ⚙️ Installation & Usage
 
@@ -213,17 +207,7 @@ For development, ensure Python 3.10+ is used, as the code leverages modern Pytho
 
 ---
 
-## 🚀 Development Workflow
 
-1. **Clone the repository**: `git clone <repo-url>`
-2. **Set up virtual environment**: `python -m venv .venv && .venv\Scripts\activate`
-3. **Install dependencies**: `pip install -r requirements.txt`
-4. **Run tests**: `python -m pytest` (ensure pytest is installed)
-5. **Make changes**: Edit code in your preferred IDE
-6. **Test locally**: Run `python main.py` or `python main_mac.py`
-7. **Commit and push**: Follow standard Git workflow
-
----
 
 ## 📸 Screenshots
 
