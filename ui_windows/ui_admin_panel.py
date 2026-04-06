@@ -1,0 +1,421 @@
+
+import customtkinter as ctk
+from PIL import Image, ImageTk
+from CTkTable import *
+import sys
+import os
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+if parent_dir not in sys.path:
+    sys.path.append(parent_dir)
+
+import models
+import storage
+import json
+MAIN_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(MAIN_DIR, "data.json")
+
+from ui_windows import ui_admin_user_table
+
+class AdminPanel(ctk.CTk):
+    def __init__(self, admin_id, parent_login=None):
+        super().__init__()
+        self.admin_id = admin_id
+        self.parent_login = parent_login
+        self.center_window()
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
+        
+        self.title("Admin Control Center")
+        self.geometry("400x700")
+        self.configure(fg_color="#0A0E27") 
+        self.resizable(False, False)
+
+        # Header Section
+        self.header_label = ctk.CTkLabel(
+            self, 
+            text="ADMIN CONTROL PANEL", 
+            font=("Inter", 20, "bold"),
+            text_color="white"
+        )
+        self.header_label.pack(pady=(40, 20))
+
+
+        self.button_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.button_frame.pack(expand=True, fill="both", padx=40)
+        
+
+        # account creation button
+        self.create_btn = self.create_admin_button(
+            "Create New Account", 
+            self.open_create_account_window
+        )
+        
+        # accounts table button
+        self.dash_btn = self.create_admin_button(
+            "Accounts Dashboard", 
+            self.open_accounts_list
+        )
+        
+        # block or unblock button
+        self.block_btn = self.create_admin_button(
+            "Block/Unblock User", 
+            self.open_block_window 
+        )
+        
+        # delete a user button
+        self.delete_btn = self.create_admin_button(
+            "Delete Account", 
+            self.open_delete_account_window
+        )
+
+
+
+        # logout of the panel button
+        self.logout_btn = ctk.CTkButton(
+            self.button_frame,
+            text="Logout",
+            height=50,
+            corner_radius=10,
+            fg_color="transparent",
+            border_width=2,
+            border_color="#EF4444",
+            text_color="#EF4444",
+            hover_color="#2D1B1B",
+            command=self.logout
+        )
+        self.logout_btn.pack(fill="x", pady=10)
+
+
+
+    def popup_win(self,title, message):
+        popup_win = ctk.CTkToplevel(self)
+        popup_win.title(title)
+        popup_win.geometry("300x150")
+        popup_win.configure(fg_color="#0A0E27")
+        popup_win.resizable(False, False)
+        popup_win.attributes("-topmost", True)
+        popup_win.grab_set()
+
+
+        popup_label = ctk.CTkLabel(popup_win, text=message, font=("Inter", 13), wraplength=250, text_color="white")
+        popup_label.pack(pady=20)
+
+        ok_btn = ctk.CTkButton(
+            popup_win,
+            text="OK", 
+            width=100, 
+            command=popup_win.destroy,
+            fg_color="#3B82F6",
+            text_color="white"
+        )
+        ok_btn.pack(pady=10)
+    
+        self.center_window(popup_win)
+    
+
+    def on_closing(self):
+            """_this functions task is killing the hidden login window too_
+            """
+            if self.parent_login:
+                self.parent_login.destroy()
+            self.destroy()
+
+    def center_window(self, window=None):
+        """_this function puts the window we are launching in the middle of the screen, relative to the dimensions of it._
+
+        Args:
+            window (_type_, object): _description_. Defaults to None.
+        """
+        
+        win = window if window else self
+    
+        win.update_idletasks()
+    
+        width = win.winfo_width()
+        height = win.winfo_height()
+    
+        # get screen dimensions
+        screen_width = win.winfo_screenwidth()
+        screen_height = win.winfo_screenheight()
+    
+        # calculate coordinates
+        x = (screen_width // 2) - (width // 2)
+        y = (screen_height // 2) - (height // 2)
+    
+        win.geometry(f"{width}x{height}+{x}+{y}")
+
+
+    def create_admin_button(self, text, command):
+            btn = ctk.CTkButton(
+                self.button_frame,
+                text=text,
+                height=60,
+                corner_radius=10,
+                fg_color="#3B82F6",
+                hover_color="#2563EB",
+                text_color="white",
+                font=("Inter", 14, "bold"),
+                command=command
+            )
+            btn.pack(fill="x", pady=10)
+            return btn
+
+    def create_account_logic(self, create_win, user_entry, pin_entry, bal_entry, is_admin_var):
+            """this function creates a new accounts and adds it to the JSON database file.
+
+            Args:
+                create_win (_object_): _this is the window we are working on that got sent to the function._
+                user_entry (_type_): _username we got as input._
+                pin_entry (_type_): _pin we got as input._
+                bal_entry (_type_): _starting balance we got as input._
+                is_admin_var (bool): _tells the function to give the user admin perms or not._
+            """
+            try:
+                username = user_entry.get()
+                pin = pin_entry.get()
+                balance = bal_entry.get()
+                is_admin = is_admin_var.get()
+
+                if not username or not pin or not balance:
+                    self.popup_win("Error", "All fields are required!")
+                    return
+                
+                
+
+                models.Admin.create_client_account(
+                    username=username, 
+                    pin=pin, 
+                    balance=balance, 
+                    blocked_or_not=False, 
+                    is_admin=is_admin
+                )
+
+                self.popup_win("Success", f"{'Admin' if is_admin else 'User'} account created!")
+                create_win.destroy()
+
+            except ValueError:
+                self.popup_win("Error", "Balance must be a number.")
+
+    def toggle_block_logic(self, block_win, id_entry):
+            """this function changes the block_or_not key in the specific user we are targting to block or unblock.
+
+            Args:
+                block_win (_type_): _this is the window we are working on that got sent to the function._
+                id_entry (_type_): the id of the user we are blocking._
+            """
+            target_id = id_entry.get().strip()
+            
+            if not target_id:
+                self.popup_win("Error", "Please enter a Client ID.")
+                return
+
+            all_clients = storage.all_clients()
+
+            if target_id in all_clients:
+
+                current_status = all_clients[target_id].get("blocked_or_not", False)
+                all_clients[target_id]["blocked_or_not"] = not current_status #! here the "not" makes the "current_status" the opposite of what it was.
+                
+                storage.save_clients(all_clients)
+                
+                new_state = "BLOCKED" if not current_status else "UNBLOCKED"
+                self.popup_win("Success", f"User {target_id} is now {new_state}")
+                block_win.destroy()
+            else:
+                self.popup_win("Error", f"User ID {target_id} not found.")
+
+
+
+
+    def open_create_account_window(self):
+            create_win = ctk.CTkToplevel(self)
+            create_win.title("Create New Account")
+            create_win.geometry("400x550")
+            create_win.configure(fg_color="#0A0E27")
+            create_win.attributes('-topmost', True)
+            create_win.grab_set()
+            create_win.resizable(False, False)
+
+            frame = ctk.CTkFrame(create_win, fg_color="transparent")
+            frame.pack(expand=True, fill="both", padx=40, pady=20)
+
+            ctk.CTkLabel(frame, text="Create New User", font=("Inter", 20, "bold"), text_color="white").pack(pady=20)
+
+            user_entry = ctk.CTkEntry(frame, placeholder_text="Username", height=45, corner_radius=10)
+            user_entry.pack(fill="x", pady=10)
+
+            pin_entry = ctk.CTkEntry(frame, placeholder_text="PIN (4 digits)", height=45, corner_radius=10)
+            pin_entry.pack(fill="x", pady=10)
+
+            bal_entry = ctk.CTkEntry(frame, placeholder_text="Initial Balance", height=45, corner_radius=10)
+            bal_entry.pack(fill="x", pady=10)
+
+            is_admin_var = ctk.BooleanVar(value=False)
+            admin_switch = ctk.CTkSwitch(
+                frame, 
+                text="Give Admin Privileges", 
+                variable=is_admin_var,
+                progress_color="#EE2626",
+                font=("Inter", 13),
+                text_color="white"
+            )
+            admin_switch.pack(pady=20)
+
+            confirm_btn = ctk.CTkButton(
+                frame, 
+                text="Create Account", 
+                height=50, 
+                fg_color="#3B82F6",
+                command=lambda: self.create_account_logic(
+                    create_win, user_entry, pin_entry, bal_entry, is_admin_var
+                )
+            )
+            confirm_btn.pack(fill="x", pady=(10, 10))
+
+            ctk.CTkButton(frame, text="Cancel", fg_color="#1F1F1F", command=create_win.destroy).pack(fill="x")
+            
+            self.center_window(create_win)
+            self.after(100, self.deiconify)
+            self.update_idletasks()
+
+    def open_accounts_list(self):
+            """_this function calls the Admin_user_table function from the ui_admin_user_table.py file in order to show the users table in realtime._
+            """
+            self.user_table_window = ui_admin_user_table.Admin_user_table(parent_login=self)
+
+            self.user_table_window.attributes("-topmost", True)
+            self.user_table_window.focus_force()
+
+
+    def open_block_window(self):
+            block_win = ctk.CTkToplevel(self)
+            block_win.title("Manage Account Status")
+            block_win.geometry("400x350")
+            block_win.configure(fg_color="#0A0E27")
+            block_win.attributes('-topmost', True)
+            block_win.grab_set()
+            block_win.resizable(False, False)
+
+            frame = ctk.CTkFrame(block_win, fg_color="transparent")
+            frame.pack(expand=True, fill="both", padx=40, pady=20)
+
+            ctk.CTkLabel(
+                frame, 
+                text="Block / Unblock User", 
+                font=("Inter", 20, "bold"), 
+                text_color="white"
+            ).pack(pady=20)
+
+            id_entry = ctk.CTkEntry(
+                frame, 
+                placeholder_text="Enter Client ID", 
+                height=45, 
+                corner_radius=10,
+                fg_color="#161C30",
+                border_width=0,
+                text_color="white"
+            )
+            id_entry.pack(fill="x", pady=10)
+
+            confirm_btn = ctk.CTkButton(
+                frame, 
+                text="Toggle Block Status", 
+                height=50, 
+                fg_color="#3B82F6",
+                hover_color="#2563EB",
+                font=("Inter", 14, "bold"),
+                command=lambda: self.toggle_block_logic(block_win, id_entry)
+            )
+            confirm_btn.pack(fill="x", pady=(20, 10))
+
+            ctk.CTkButton(
+                frame, text="Cancel", fg_color="#1F1F1F", 
+                command=block_win.destroy
+            ).pack(fill="x")
+            
+            self.center_window(block_win)
+
+
+    def delete_account_logic(self, delete_win, id_entry):
+        """_summary_
+
+        Args:
+            delete_win (_type_): _this is the window we are working on that got sent to the function._
+            id_entry (_type_): _thi is the id of the user we want to delete._
+        """
+        client_id = id_entry.get().strip()
+        
+        if not client_id:
+            self.popup_win("Error", "Please enter a Client ID.")
+            return
+
+        success = models.Admin.delete_account(client_id)
+
+        if success:
+            self.popup_win("Success", f"Account {client_id} has been deleted.")
+            delete_win.destroy()
+        else:
+            self.popup_win("Error", f"Account ID {client_id} not found.")
+
+    def open_delete_account_window(self):
+        delete_win = ctk.CTkToplevel(self)
+        delete_win.title("Delete Account")
+        delete_win.geometry("400x300")
+        delete_win.configure(fg_color="#0A0E27")
+        delete_win.attributes('-topmost', True)
+        delete_win.grab_set()
+        delete_win.resizable(False, False)
+
+        frame = ctk.CTkFrame(delete_win, fg_color="transparent")
+        frame.pack(expand=True, fill="both", padx=40, pady=20)
+
+        ctk.CTkLabel(
+            frame, 
+            text="Delete User Account", 
+            font=("Inter", 20, "bold"), 
+            text_color="#EF4444"
+        ).pack(pady=20)
+
+        id_entry = ctk.CTkEntry(
+            frame, 
+            placeholder_text="Enter Client ID to delete", 
+            height=45, 
+            corner_radius=10
+        )
+        id_entry.pack(fill="x", pady=10)
+
+        confirm_btn = ctk.CTkButton(
+            frame, 
+            text="Permanently Delete", 
+            height=50, 
+            fg_color="#EF4444", 
+            hover_color="#B91C1C",
+            font=("Inter", 14, "bold"),
+            command=lambda: self.delete_account_logic(delete_win, id_entry)
+        )
+        confirm_btn.pack(fill="x", pady=(20, 10))
+
+        ctk.CTkButton(
+            frame, 
+            text="Cancel", 
+            fg_color="#1F1F1F", 
+            command=delete_win.destroy
+        ).pack(fill="x")
+        
+        self.center_window(delete_win)
+
+
+
+
+    def logout(self):
+        if self.parent_login:
+            self.parent_login.deiconify() #--> this opens back the window we closed with withdraw() in ui_admin_panel.
+        self.destroy()
+
+
+
+
+if __name__ == "__main__":
+    app = AdminPanel("ADMIN01")
+    app.mainloop()
