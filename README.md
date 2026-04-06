@@ -1,4 +1,4 @@
-# Argument Capital Project (With MongoDB Integration) 🚀
+# Argument Capital Project (With MongoDB Integration) 
 
 [![Project Status](https://img.shields.io/badge/status-active-success)](https://github.com/)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
