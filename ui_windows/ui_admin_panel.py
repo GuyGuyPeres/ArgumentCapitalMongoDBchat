@@ -128,7 +128,7 @@ class AdminPanel(ctk.CTk):
     
         manager = SupportManager()
     
-        # 1. Find the currently active/locked session
+        # find the currently active/locked session
         active_session = manager.db["support_chats"].find_one({"is_busy": True})
     
         if not active_session:
@@ -138,13 +138,13 @@ class AdminPanel(ctk.CTk):
         session_id = active_session["session_id"]
         user_id = active_session.get("current_user_id", "Unknown")
 
-        # 2. Create the Admin Chat Window
+        # 2. create the admin chat window
         admin_win = ctk.CTkToplevel(self)
         admin_win.title(f"Admin Support - {session_id} (User: {user_id})")
         admin_win.geometry("450x600")
         admin_win.attributes("-topmost", True)  # Keep window on top
 
-        # UI Elements
+        
         display_frame = ctk.CTkFrame(admin_win, fg_color="transparent")
         display_frame.pack(expand=True, fill="both", padx=10, pady=10)
 
@@ -168,7 +168,7 @@ class AdminPanel(ctk.CTk):
         send_btn = ctk.CTkButton(input_frame, text="Send", width=70, command=send_response)
         send_btn.pack(side="left")
 
-        # 3. Session Management (Crucial for unlocking the DB)
+        # session management 
         def close_and_resolve():
             if messagebox.askyesno("Confirm", "Close session? This will allow other users to contact support."):
                 manager.end_chat(session_id)
@@ -183,7 +183,7 @@ class AdminPanel(ctk.CTk):
         )
         end_btn.pack(pady=(0, 20))
 
-        # 4. Refresh Loop (Polling)
+        # refresh Loop (Polling)
         def refresh_messages():
             if admin_win.winfo_exists():
                 messages = manager.get_messages(session_id)
@@ -192,7 +192,7 @@ class AdminPanel(ctk.CTk):
                 chat_display.delete("1.0", "end")
                 
                 for m in messages:
-                    # If sender matches admin_id, label as Admin, else User
+                    # if the sender matches admin_id, label as Admin, else User
                     tag = "ADMIN" if str(m['sender']) == str(self.admin_id) else f"USER({user_id})"
                     chat_display.insert("end", f"[{m['timestamp']}] {tag}: {m['text']}\n")
                 

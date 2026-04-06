@@ -18,7 +18,6 @@ if parent_dir not in sys.path:
 
 class SupportManager:
     def __init__(self):
-        # Update with your MongoDB URI
         cr = certifi.where()
         mongoconnectionstring = os.getenv("MONGO_URI")
         self.client = MongoClient(mongoconnectionstring, tlsCAFile=cr)
@@ -31,7 +30,7 @@ class SupportManager:
         if not last_session or "session_id" not in last_session:
             return "session_1"
         
-        # Extract number from "session_N"
+        # extract number from "session_N"
         try:
             current_num = int(last_session["session_id"].split("_")[1])
             return f"session_{current_num + 1}"
@@ -43,12 +42,12 @@ class SupportManager:
         active_session = self.chats.find_one({"is_busy": True})
         
         if active_session:
-            # If the busy session belongs to this user, let them back in
+            # if the busy session belongs to this user, it lets them back in!
             if active_session.get("current_user_id") == user_id:
                 return True, active_session["session_id"]
             return False, "Support is currently busy with another client."
         
-        # No one is busy, create a brand new incremented session
+        # this means no one is busy, create a brand new incremented session
         new_id = self._get_next_session_id()
         self.chats.insert_one({
             "session_id": new_id,

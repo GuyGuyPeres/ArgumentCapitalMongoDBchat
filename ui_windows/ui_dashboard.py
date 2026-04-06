@@ -293,17 +293,17 @@ class Dashboard(ctk.CTk):
 
         def refresh():
             if chat_win.winfo_exists():
-                # 1. Fetch current session data from MongoDB
+                # fetch current session data from MongoDB
                 session = manager.chats.find_one({"session_id": session_id})
                 
-                # 2. Check if the admin has toggled is_busy to False
+                # check if the admin has toggled is_busy to False
                 if session and not session.get("is_busy"):
                     from tkinter import messagebox
                     messagebox.showinfo("Support", "The admin has ended this support session. Thank you!")
                     chat_win.destroy()
                     return # Stop the refresh loop
 
-                # 3. Otherwise, update the messages as usual
+                # otherwise, update the messages as usual
                 msgs = session.get("messages", []) if session else []
                 chat_display.configure(state="normal")
                 chat_display.delete("1.0", "end")
@@ -316,6 +316,7 @@ class Dashboard(ctk.CTk):
                 chat_win.after(500, refresh)
 
         refresh()
+        
         def on_user_close_chat():
             if messagebox.askyesno("Confirm", "Close chat? This will end your support session."):
                 manager.end_chat(session_id)
