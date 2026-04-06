@@ -61,6 +61,7 @@ ArgumentCapitalProject/
 ### Prerequisites
 - Python 3.10 or higher
 - MongoDB Atlas account or local MongoDB instance
+- MAKE SURE TO USE REGULAR (100%) DISPLAY SCALING! --IMPORTANT-- (הוראות אלו נכתבו בדם)
 - Git
 
 ### Setup Steps
@@ -159,30 +160,6 @@ Key dependencies include:
 - `CTkTable`: Table widget for admin interfaces
 
 See `requirements.txt` for the complete list.
-
-
----
-
-
-## ⚙️ Installation & Usage
-
-### Prerequisites
-
-- MAKE SURE TO USE REGULAR (100%) DISPLAY SCALING! --IMPORTANT-- (הוראות אלו נכתבו בדם)
-- Python 3.10 or newer
-- `pip` package manager
-
-### Install dependencies
-
-```bash
-python -m pip install -r requirements.txt
-```
-
-
-
-
-> Tip: Use a virtual environment to keep dependencies isolated:
-> `python -m venv .venv && .venv\Scripts\activate && python -m pip install -r requirements.txt`
 
 ---
 
