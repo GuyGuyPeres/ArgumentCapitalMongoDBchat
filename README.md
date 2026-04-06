@@ -176,14 +176,6 @@ This separation ensures maintainability and allows for easy testing and future e
 
 ---
 
-## ⚙️ Configuration
-
-The application uses a JSON file (`data.json`) for data storage. No additional configuration files are required, but you can modify the data file directly for initial setup or testing.
-
-For development, ensure Python 3.10+ is used, as the code leverages modern Python features.
-
----
-
 
 
 ## 📸 Screenshots
