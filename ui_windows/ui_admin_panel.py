@@ -122,11 +122,11 @@ class AdminPanel(ctk.CTk):
     #! /////////////////////////////////////////
     
     def open_admin_chat(self):
-        from support_manager import SupportManager
+        from ui_windows import support_manager
         import customtkinter as ctk
         from tkinter import messagebox
     
-        manager = SupportManager()
+        manager = support_manager.SupportManager()
     
         # find the currently active/locked session
         active_session = manager.db["support_chats"].find_one({"is_busy": True})
