@@ -68,6 +68,12 @@ class AdminPanel(ctk.CTk):
             "Delete Account", 
             self.open_delete_account_window
         )
+        
+        # support button
+        self.support_btn = self.create_admin_button(
+            "Support Chat", 
+            self.open_admin_chat
+        )
 
 
 
@@ -113,6 +119,91 @@ class AdminPanel(ctk.CTk):
     
         self.center_window(popup_win)
     
+    #! /////////////////////////////////////////
+    
+    def open_admin_chat(self):
+        from support_manager import SupportManager
+        import customtkinter as ctk
+        from tkinter import messagebox
+    
+        manager = SupportManager()
+    
+        # 1. Find the currently active/locked session
+        active_session = manager.db["support_chats"].find_one({"is_busy": True})
+    
+        if not active_session:
+            messagebox.showinfo("Support", "No active support requests at the moment.")
+            return
+
+        session_id = active_session["session_id"]
+        user_id = active_session.get("current_user_id", "Unknown")
+
+        # 2. Create the Admin Chat Window
+        admin_win = ctk.CTkToplevel(self)
+        admin_win.title(f"Admin Support - {session_id} (User: {user_id})")
+        admin_win.geometry("450x600")
+        admin_win.attributes("-topmost", True)  # Keep window on top
+
+        # UI Elements
+        display_frame = ctk.CTkFrame(admin_win, fg_color="transparent")
+        display_frame.pack(expand=True, fill="both", padx=10, pady=10)
+
+        chat_display = ctk.CTkTextbox(display_frame, width=400, height=380, state="disabled", corner_radius=10)
+        chat_display.pack(pady=10)
+
+        input_frame = ctk.CTkFrame(admin_win, fg_color="transparent")
+        input_frame.pack(fill="x", padx=10, pady=10)
+
+        msg_entry = ctk.CTkEntry(input_frame, placeholder_text="Type your response...", width=300)
+        msg_entry.pack(side="left", padx=(0, 10))
+
+        def send_response():
+            text = msg_entry.get()
+            if text:
+                # Use the Admin's ID as the sender
+                manager.send_message(session_id, self.admin_id, text)
+                msg_entry.delete(0, 'end')
+
+        send_btn = ctk.CTkButton(input_frame, text="Send", width=70, command=send_response)
+        send_btn.pack(side="left")
+
+        # 3. Session Management (Crucial for unlocking the DB)
+        def close_and_resolve():
+            if messagebox.askyesno("Confirm", "Close session? This will allow other users to contact support."):
+                manager.end_chat(session_id)
+                admin_win.destroy()
+
+        end_btn = ctk.CTkButton(
+            admin_win, 
+            text="End Session & Resolve", 
+            fg_color="#EF4444", 
+            hover_color="#B91C1C",
+            command=close_and_resolve
+        )
+        end_btn.pack(pady=(0, 20))
+
+        # 4. Refresh Loop (Polling)
+        def refresh_messages():
+            if admin_win.winfo_exists():
+                messages = manager.get_messages(session_id)
+                
+                chat_display.configure(state="normal")
+                chat_display.delete("1.0", "end")
+                
+                for m in messages:
+                    # If sender matches admin_id, label as Admin, else User
+                    tag = "ADMIN" if str(m['sender']) == str(self.admin_id) else f"USER({user_id})"
+                    chat_display.insert("end", f"[{m['timestamp']}] {tag}: {m['text']}\n")
+                
+                chat_display.configure(state="disabled")
+                chat_display.see("end") # Auto-scroll to bottom
+                admin_win.after(1500, refresh_messages)
+
+        refresh_messages()
+    
+    
+    
+    #! /////////////////////////////////////////
 
     def on_closing(self):
             """_this functions task is killing the hidden login window too_

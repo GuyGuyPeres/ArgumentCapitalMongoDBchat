@@ -7,3 +7,4 @@ test_models.py
 test_storage.py
 
 .DS_Store
+.env
