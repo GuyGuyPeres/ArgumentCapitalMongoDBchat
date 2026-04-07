@@ -314,16 +314,16 @@ class Dashboard(ctk.CTk):
                 
                 chat_display.configure(state="disabled")
                 chat_display.see("end")
-                chat_win.after(500, refresh)
+                chat_win.after(1500, refresh)
 
         refresh()
         
-        def on_user_close_chat():
-            if messagebox.askyesno("Confirm", "Close chat? This will end your support session."):
-                manager.end_chat(session_id)
-                chat_win.destroy()
+        def on_user_close():
+            manager.end_chat(session_id) # Release the lock in MongoDB
+            chat_win.destroy()
 
-        chat_win.protocol("WM_DELETE_WINDOW", on_user_close_chat)
+        chat_win.protocol("WM_DELETE_WINDOW", on_user_close)
+
 
 #! /////////////////////////////////////////////////////////////////
 

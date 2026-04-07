@@ -138,11 +138,11 @@ class AdminPanel(ctk.CTk):
         session_id = active_session["session_id"]
         user_id = active_session.get("current_user_id", "Unknown")
 
-        # 2. create the admin chat window
+        # create the admin chat window
         admin_win = ctk.CTkToplevel(self)
         admin_win.title(f"Admin Support - {session_id} (User: {user_id})")
         admin_win.geometry("450x600")
-        admin_win.attributes("-topmost", True)  # Keep window on top
+        admin_win.attributes("-topmost", True)
 
         
         display_frame = ctk.CTkFrame(admin_win, fg_color="transparent")
@@ -197,7 +197,7 @@ class AdminPanel(ctk.CTk):
                     chat_display.insert("end", f"[{m['timestamp']}] {tag}: {m['text']}\n")
                 
                 chat_display.configure(state="disabled")
-                chat_display.see("end") # Auto-scroll to bottom
+                chat_display.see("end") # auto scroll to bottom
                 admin_win.after(1500, refresh_messages)
 
         refresh_messages()
