@@ -177,14 +177,6 @@ This separation ensures maintainability and allows for easy testing and future e
 ---
 
 
-
-## 📸 Screenshots
-
-*Coming soon: Screenshots of the login screen, dashboard, and admin panel will be added here.*
-
----
-
-
 ## 👥 The Team
 
 - **Guy Peres**
