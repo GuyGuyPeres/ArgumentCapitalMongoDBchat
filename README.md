@@ -1,193 +1,273 @@
-# Argument Capital Project (With MongoDB Integration) 
+<div align="center">
 
-[![Project Status](https://img.shields.io/badge/status-active-success)](https://github.com/)
-[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+![Banner](https://placehold.co/900x200/0d1117/ffffff?text=Argument+Capital+ATM&font=montserrat)
 
-A modern desktop ATM simulation application built with Python, featuring user authentication, transaction management, administrative controls for banking operations, and integrated live chat support using MongoDB.
+# 🏦 Argument Capital ATM
 
----
+### A full-featured desktop ATM simulator with live MongoDB-powered chat support
 
-## 🌟 Project Overview
-
-Argument Capital ATM Machine is a comprehensive desktop application that simulates a full-featured ATM system with real-time chat support. It provides users with secure access to banking operations including deposits, withdrawals, balance inquiries, and transaction history, while offering administrators powerful tools to manage users and monitor system activity. The application includes a live chat support system powered by MongoDB for seamless customer assistance.
-
-This project addresses the need for a reliable, user-friendly ATM interface that can be easily deployed on desktop environments, combining intuitive GUI design with robust data persistence (JSON for accounts, MongoDB for chat) and modular architecture for maintainable banking software.
-
----
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![customtkinter](https://img.shields.io/badge/customtkinter-5.2.2-1f6aa5?style=for-the-badge)](https://github.com/TomSchimansky/CustomTkinter)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![pymongo](https://img.shields.io/badge/pymongo-4.16.0-47A248?style=for-the-badge)](https://pypi.org/project/pymongo/)
+[![License](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge)](https://github.com/GuyGuyPeres/ArgumentCapitalMongoDBchat/pulls)
 
 <a href="https://ibb.co/gZvyhtB7"><img src="https://i.ibb.co/r2bkN51t/image.png" alt="image" border="0"></a>
 
+</div>
+
+---
+
+## 📖 Table of Contents
+- [Tech Stack](#-tech-stack)
+- [Key Features](#-key-features)
+- [Getting Started](#-getting-started)
+- [Usage](#-usage)
+- [Architecture](#-architecture)
+- [License](#-license)
+
+---
+
+## 🛠 Tech Stack
+
+| Layer | Technology | Version |
+|-------|-----------|---------|
+| Language | Python | 3.10+ |
+| GUI Framework | customtkinter | 5.2.2 |
+| GUI Extras | CTkTable, pywinstyles | 1.1 / 1.8 |
+| Database — Chat | MongoDB Atlas | pymongo 4.16.0 |
+| Database — Accounts | JSON (data.json) | — |
+| Env Management | python-dotenv | 1.2.2 |
+| Image Processing | Pillow | 12.2.0 |
+| SSL Certificates | certifi | 2021.5.30 |
+| Testing | pytest | 9.0.2 |
+
+---
+
 ## ✨ Key Features
 
-- **Secure User Authentication**: PIN-based login with account blocking after failed attempts.
-- **ATM Operations**: Deposit, withdrawal, transfer, and balance checking with real-time updates.
-- **Transaction History**: Detailed logs of all financial transactions with timestamps.
-- **Admin Panel**: Comprehensive user management, account oversight, and system controls.
-- **Live Chat Support**: Real-time customer support chat system using MongoDB for persistent messaging.
-- **Modern GUI**: Sleek interface using `customtkinter` with dark mode support.
-- **Dual Data Persistence**: JSON-based storage for accounts and transactions, MongoDB for chat sessions.
-- **Modular Architecture**: Separated UI, business logic, storage, and chat layers for easy extension.
-- **Cross-Platform Compatibility**: Native support for Windows and macOS with platform-specific UI optimizations.
+- **PIN-Based Authentication** — Secure login for both users and admins with automatic account blocking after repeated failed attempts, preventing brute-force access.
+- **Full ATM Operations** — Deposit, withdraw, and transfer funds between accounts with overdraft protection and real-time balance updates after every transaction.
+- **Complete Transaction History** — Every financial operation is logged with type, direction, amount, old/new balance, and a timestamp for full auditability.
+- **Admin Control Panel** — Administrators can create, search, block, unblock, promote, and permanently delete user accounts from a dedicated dashboard.
+- **Live MongoDB Chat Support** — Users open a real-time support session directly from the dashboard; messages persist in MongoDB Atlas and admins respond from the admin panel.
+- **Session-Managed Chat Queue** — The support engine enforces one active session at a time per slot, preventing chat collisions and allowing clean session handoffs.
+- **Dual Data Persistence** — Account and transaction data live in a local JSON file for speed; chat sessions live in MongoDB for cloud persistence — each storage layer optimised for its workload.
+- **Modular Layered Architecture** — UI, business logic, JSON storage, and MongoDB chat are fully decoupled layers, making each independently testable and replaceable.
+- **Cross-Platform Desktop App** — Dedicated entry points (`main.py` for Windows, `main_mac.py` for macOS) with platform-aware UI and native styling via `pywinstyles`.
 
 ---
 
-## 📁 File Structure
-
-```text
-ArgumentCapitalProject/
-├── `main.py`                  # Main application entry point for Windows
-├── `main_mac.py`              # Main application entry point for macOS
-├── `models.py`                # Domain models and business logic definitions
-├── `storage.py`               # Local JSON storage layer and persistence utilities
-├── `support_manager.py`       # MongoDB-based chat support management system
-├── `data.json`                # JSON data store for application state (accounts, transactions)
-├── `README.md`                # Project documentation
-├── `requirements.txt`         # Python dependencies for the project
-├── `.env`                     # Environment variables (MongoDB URI, etc.)
-├── `ui_windows/`              # UI modules and components
-│   ├── `ui_admin_login.py`     # Admin login screen implementation
-│   ├── `ui_admin_panel.py`     # Admin dashboard panel with chat support
-│   ├── `ui_admin_user_table.py`# User management interface
-│   ├── `ui_dashboard.py`       # Main user dashboard with chat integration
-│   ├── `test_final_ui.py`      # Windows UI implementation
-│   ├── `test_ui_mac.py`        # macOS UI implementation
-│   └── `support_manager.py`    # Chat support manager (MongoDB integration)
-└── `__init__.py`              # Package initialization marker
-```
-
----
-
-## 🛠 Installation
+## 🚀 Getting Started
 
 ### Prerequisites
-- Python 3.10 or higher
-- MongoDB Atlas account or local MongoDB instance
-- MAKE SURE TO USE REGULAR (100%) DISPLAY SCALING! --IMPORTANT-- (הוראות אלו נכתבו בדם)
-- Git
 
-### Setup Steps
+- [Python 3.10+](https://www.python.org/downloads/)
+- [Git](https://git-scm.com/)
+- [MongoDB Atlas account](https://www.mongodb.com/cloud/atlas) or a local MongoDB instance
+- Display scaling set to **100%** — the UI is calibrated for 1:1 scaling; other values will misalign elements
+
+### Installation
 
 1. **Clone the repository:**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/GuyGuyPeres/ArgumentCapitalMongoDBchat.git
    cd ArgumentCapitalMongoDBchat
    ```
 
-2. **Install Python dependencies:**
+2. **Create and activate a virtual environment:**
+
+   macOS / Linux:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate
+   ```
+
+   Windows:
+   ```bash
+   python -m venv venv
+   venv\Scripts\activate
+   ```
+
+3. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Set up MongoDB:**
-   - Create a MongoDB Atlas cluster or set up a local MongoDB instance
-   - Create a database named `ArgumentCapitalChatDB`
-   - Create a collection named `support_chats`
-   - Obtain your MongoDB connection string
-
 4. **Configure environment variables:**
-   - Create a `.env` file in the root directory
-   - Add your MongoDB URI:
-     ```
-     MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority
-     ```
 
-5. **Initialize data:**
-   - The `data.json` file contains sample account data
-   - Ensure the file is present in the root directory
+   Create a `.env` file in the project root:
+   ```env
+   MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/?retryWrites=true&w=majority
+   ```
 
----
+   > ⚠️ Never commit your `.env` file. It contains your MongoDB credentials. Confirm `.env` is listed in `.gitignore` before your first push.
 
-## 🚀 Usage
+5. **Set up MongoDB:**
+   - In MongoDB Atlas, create a database named `ArgumentCapitalChatDB`
+   - Inside it, create a collection named `support_chats`
+   - Whitelist your IP address under **Network Access**
 
-### Running the Application
+6. **Verify sample data:**
+   - Confirm `data.json` is present in the project root — it seeds the initial user accounts and is required at startup
 
-**For Windows:**
+<details>
+<summary>🔧 <b>Troubleshooting</b></summary>
+
+- **`ServerSelectionTimeoutError` on startup** — Your `MONGO_URI` in `.env` is incorrect, or your current IP address is not whitelisted in MongoDB Atlas → Security → Network Access.
+- **`ModuleNotFoundError`** — Your virtual environment is not activated. Run `source venv/bin/activate` (macOS/Linux) or `venv\Scripts\activate` (Windows), then re-run `pip install -r requirements.txt`.
+- **UI elements misaligned or oversized** — Open OS display settings and set scaling to exactly **100%**, then restart the application.
+- **`FileNotFoundError: data.json`** — The local JSON database is missing. Restore `data.json` from the repository. Do not delete this file while the app is running.
+- **`dotenv` not loading** — Ensure the `.env` file is in the project root (same directory as `main.py`) and has no syntax errors.
+
+</details>
+
+### Run the App
+
+**Windows:**
 ```bash
 python main.py
 ```
 
-**For macOS:**
+**macOS:**
 ```bash
 python main_mac.py
 ```
 
+The desktop window launches immediately. No server or browser required.
+
+### Run Tests
+
+```bash
+pytest
+```
+
+---
+
+## 💡 Usage
+
 ### User Workflow
 
-1. **Login**: Enter your Account ID and PIN
-2. **ATM Operations**: 
-   - Check balance
-   - Make deposits
-   - Withdraw funds
-   - Transfer money between accounts
-   - View transaction history
-3. **Support Chat**: Click "Contact Support" to start a live chat session with administrators
-4. **Admin Access**: Login with admin credentials to access the admin panel for user management and support chat handling
+1. **Login** — Enter your Account ID and PIN. After too many wrong attempts the account is automatically blocked.
+2. **Dashboard** — All ATM operations are available from the main dashboard:
 
-### Admin Features
+| Action | What it does |
+|--------|-------------|
+| Check Balance | Displays current account balance |
+| Deposit | Adds funds; rejects negative amounts |
+| Withdraw | Deducts funds; blocks if balance is insufficient |
+| Transfer | Moves funds to another account by ID |
+| Transaction History | Shows every past operation with timestamps |
+| Contact Support | Opens a live chat session with an admin |
 
-- Create and manage user accounts
-- View and modify account balances
-- Monitor transaction history
-- Handle live support chat sessions
-- Block/unblock user accounts
+3. **Support Chat** — Click **Contact Support** to start a session. Type messages in real time and wait for an admin response. Close the window to end the session.
+
+### Admin Workflow
+
+Login with admin credentials to reach the **Admin Panel**:
+
+| Feature | Description |
+|---------|-------------|
+| View All Users | Table of every non-admin account with balances and status |
+| Create Account | Register a new user with username, PIN, and starting balance |
+| Find Account | Search any account by ID |
+| Block / Unblock | Toggle account access without deleting the record |
+| Promote to Admin | Elevate a user account to admin privileges |
+| Delete Account | Permanently remove an account from the system |
+| Support Chat | Receive and reply to active user chat sessions in real time |
 
 ### Chat Support System
 
-- Users can initiate support chats from the dashboard
-- Real-time messaging with persistent storage in MongoDB
-- Admin can respond to active chat sessions
-- Sessions are managed to prevent multiple concurrent chats
+The support engine (`support_manager.py`) manages sessions stored in MongoDB:
+
+```json
+{
+  "session_id": "session_1",
+  "is_busy": true,
+  "current_user_id": 103,
+  "messages": [
+    { "sender": 103, "text": "Hello, I need help.", "timestamp": "14:32" }
+  ],
+  "created_at": "<datetime>"
+}
+```
+
+- One active session slot at a time prevents chat collisions
+- Users who already have an active session re-enter it on reconnect
+- Admins end the session from the admin panel, freeing the slot for the next user
 
 ---
 
-## 🔧 Configuration
+## 🏗 Architecture
 
-### Environment Variables
-- `MONGO_URI`: MongoDB connection string (required for chat functionality)
+### Folder Structure
 
-### Data Files
-- `data.json`: Contains user accounts, balances, and transaction history
-- MongoDB collections: `support_chats` for chat session data
+```text
+📁 ArgumentCapitalMongoDBchat/
+├── 📄 main.py                    # Windows entry point
+├── 📄 main_mac.py                # macOS entry point
+├── 📄 models.py                  # Client & Admin domain models + business logic
+│                                 #   ↳ Client: deposit, withdraw, transfer, check_pin, change_pin
+│                                 #   ↳ Admin:  create_client, block, promote, delete, find_account
+├── 📄 storage.py                 # JSON persistence layer
+│                                 #   ↳ all_clients(), save_clients(), transaction_format()
+├── 📄 data.json                  # Local data store — accounts & transaction history
+├── 📄 requirements.txt           # Pinned Python dependencies
+├── 📄 .env                       # MONGO_URI secret (never committed)
+└── 📁 ui_windows/                # All UI screens
+    ├── 📄 support_manager.py     # MongoDB chat engine — session creation, messaging, teardown
+    ├── 📄 ui_admin_login.py      # Admin authentication screen
+    ├── 📄 ui_admin_panel.py      # Admin dashboard: user table + live chat interface
+    ├── 📄 ui_admin_user_table.py # Detailed user management table view
+    ├── 📄 ui_dashboard.py        # User dashboard: ATM operations + chat entry point
+    ├── 📄 test_final_ui.py       # Windows UI integration tests
+    └── 📄 test_ui_mac.py         # macOS UI integration tests
+```
 
----
+### Request Flow
 
-## 📋 Dependencies
-
-Key dependencies include:
-- `customtkinter`: Modern GUI framework
-- `pymongo`: MongoDB driver for Python
-- `pillow`: Image processing for UI assets
-- `python-dotenv`: Environment variable management
-- `CTkTable`: Table widget for admin interfaces
-
-See `requirements.txt` for the complete list.
-
----
-
-## 🏗️ Architecture
-
-The application follows a clean, layered architecture:
-
-- **UI Layer** (`ui_windows/`): Handles all user interface components using `customtkinter` and `CTkTable` for tables.
-- **Business Logic Layer** (`models.py`): Contains the `Client` and `Admin` classes with methods for transactions and account management.
-- **Data Layer** (`storage.py`): Manages JSON file operations for persistent data storage.
-- **Entry Points** (`main.py`, `main_mac.py`): Platform-specific application launchers.
-
-This separation ensures maintainability and allows for easy testing and future enhancements.
-
----
-
+```
+User Input (GUI event)
+        ↓
+UI Layer  ── ui_dashboard.py / ui_admin_panel.py
+        ↓
+Business Logic ── models.py  (Client / Admin methods)
+        ↓                          ↓
+storage.py                 support_manager.py
+(read/write data.json)     (MongoDB Atlas — ArgumentCapitalChatDB.support_chats)
+        ↓                          ↓
+     JSON file               MongoDB document
+        ↓                          ↓
+        └──────────┬───────────────┘
+                   ↓
+          UI update / error feedback
+               ↑
+  Error handlers intercept at each layer boundary
+```
 
 ## 👥 The Team
 
-- **Guy Peres**
-- **Tony Verin**
-- **Harel Valfish**
+| Name | Role |
+|------|------|
+| **Guy Peres** | Developer |
+| **Tony Verin** | Developer |
+| **Harel Valfish** | Developer |
 
 ---
 
-
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+<div align="center">
+
+Made with ☕, `customtkinter`, and way too many MongoDB queries
+
+⭐ **If this project helped you, consider giving it a star!** ⭐
+
+Built with 💻 by [Guy Peres](https://github.com/GuyGuyPeres) · [Tony Verin](https://github.com/) · [Harel Valfish](https://github.com/)
+
+</div>
