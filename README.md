@@ -36,8 +36,8 @@
 | Language | Python | 3.10+ |
 | GUI Framework | customtkinter | 5.2.2 |
 | GUI Extras | CTkTable, pywinstyles | 1.1 / 1.8 |
-| Database — Chat | MongoDB Atlas | pymongo 4.16.0 |
-| Database — Accounts | JSON (data.json) | — |
+| Database - Chat | MongoDB Atlas | pymongo 4.16.0 |
+| Database - Accounts | JSON (data.json) | - |
 | Env Management | python-dotenv | 1.2.2 |
 | Image Processing | Pillow | 12.2.0 |
 | SSL Certificates | certifi | 2021.5.30 |
@@ -47,15 +47,15 @@
 
 ## ✨ Key Features
 
-- **PIN-Based Authentication** — Secure login for both users and admins with automatic account blocking after repeated failed attempts, preventing brute-force access.
-- **Full ATM Operations** — Deposit, withdraw, and transfer funds between accounts with overdraft protection and real-time balance updates after every transaction.
-- **Complete Transaction History** — Every financial operation is logged with type, direction, amount, old/new balance, and a timestamp for full auditability.
-- **Admin Control Panel** — Administrators can create, search, block, unblock, promote, and permanently delete user accounts from a dedicated dashboard.
-- **Live MongoDB Chat Support** — Users open a real-time support session directly from the dashboard; messages persist in MongoDB Atlas and admins respond from the admin panel.
-- **Session-Managed Chat Queue** — The support engine enforces one active session at a time per slot, preventing chat collisions and allowing clean session handoffs.
-- **Dual Data Persistence** — Account and transaction data live in a local JSON file for speed; chat sessions live in MongoDB for cloud persistence — each storage layer optimised for its workload.
-- **Modular Layered Architecture** — UI, business logic, JSON storage, and MongoDB chat are fully decoupled layers, making each independently testable and replaceable.
-- **Cross-Platform Desktop App** — Dedicated entry points (`main.py` for Windows, `main_mac.py` for macOS) with platform-aware UI and native styling via `pywinstyles`.
+- **PIN-Based Authentication** - Secure login for both users and admins with automatic account blocking after repeated failed attempts, preventing brute-force access.
+- **Full ATM Operations** - Deposit, withdraw, and transfer funds between accounts with overdraft protection and real-time balance updates after every transaction.
+- **Complete Transaction History** - Every financial operation is logged with type, direction, amount, old/new balance, and a timestamp for full auditability.
+- **Admin Control Panel** - Administrators can create, search, block, unblock, promote, and permanently delete user accounts from a dedicated dashboard.
+- **Live MongoDB Chat Support** - Users open a real-time support session directly from the dashboard; messages persist in MongoDB Atlas and admins respond from the admin panel.
+- **Session-Managed Chat Queue** - The support engine enforces one active session at a time per slot, preventing chat collisions and allowing clean session handoffs.
+- **Dual Data Persistence** - Account and transaction data live in a local JSON file for speed; chat sessions live in MongoDB for cloud persistence - each storage layer optimised for its workload.
+- **Modular Layered Architecture** - UI, business logic, JSON storage, and MongoDB chat are fully decoupled layers, making each independently testable and replaceable.
+- **Cross-Platform Desktop App** - Dedicated entry points (`main.py` for Windows, `main_mac.py` for macOS) with platform-aware UI and native styling via `pywinstyles`.
 
 ---
 
@@ -66,7 +66,7 @@
 - [Python 3.10+](https://www.python.org/downloads/)
 - [Git](https://git-scm.com/)
 - [MongoDB Atlas account](https://www.mongodb.com/cloud/atlas) or a local MongoDB instance
-- Display scaling set to **100%** — the UI is calibrated for 1:1 scaling; other values will misalign elements
+- Display scaling set to **100%** - the UI is calibrated for 1:1 scaling; other values will misalign elements
 
 ### Installation
 
@@ -110,16 +110,16 @@
    - Whitelist your IP address under **Network Access**
 
 6. **Verify sample data:**
-   - Confirm `data.json` is present in the project root — it seeds the initial user accounts and is required at startup
+   - Confirm `data.json` is present in the project root - it seeds the initial user accounts and is required at startup
 
 <details>
 <summary>🔧 <b>Troubleshooting</b></summary>
 
-- **`ServerSelectionTimeoutError` on startup** — Your `MONGO_URI` in `.env` is incorrect, or your current IP address is not whitelisted in MongoDB Atlas → Security → Network Access.
-- **`ModuleNotFoundError`** — Your virtual environment is not activated. Run `source venv/bin/activate` (macOS/Linux) or `venv\Scripts\activate` (Windows), then re-run `pip install -r requirements.txt`.
-- **UI elements misaligned or oversized** — Open OS display settings and set scaling to exactly **100%**, then restart the application.
-- **`FileNotFoundError: data.json`** — The local JSON database is missing. Restore `data.json` from the repository. Do not delete this file while the app is running.
-- **`dotenv` not loading** — Ensure the `.env` file is in the project root (same directory as `main.py`) and has no syntax errors.
+- **`ServerSelectionTimeoutError` on startup** - Your `MONGO_URI` in `.env` is incorrect, or your current IP address is not whitelisted in MongoDB Atlas → Security → Network Access.
+- **`ModuleNotFoundError`** - Your virtual environment is not activated. Run `source venv/bin/activate` (macOS/Linux) or `venv\Scripts\activate` (Windows), then re-run `pip install -r requirements.txt`.
+- **UI elements misaligned or oversized** - Open OS display settings and set scaling to exactly **100%**, then restart the application.
+- **`FileNotFoundError: data.json`** - The local JSON database is missing. Restore `data.json` from the repository. Do not delete this file while the app is running.
+- **`dotenv` not loading** - Ensure the `.env` file is in the project root (same directory as `main.py`) and has no syntax errors.
 
 </details>
 
@@ -149,8 +149,8 @@ pytest
 
 ### User Workflow
 
-1. **Login** — Enter your Account ID and PIN. After too many wrong attempts the account is automatically blocked.
-2. **Dashboard** — All ATM operations are available from the main dashboard:
+1. **Login** - Enter your Account ID and PIN. After too many wrong attempts the account is automatically blocked.
+2. **Dashboard** - All ATM operations are available from the main dashboard:
 
 | Action | What it does |
 |--------|-------------|
@@ -161,7 +161,7 @@ pytest
 | Transaction History | Shows every past operation with timestamps |
 | Contact Support | Opens a live chat session with an admin |
 
-3. **Support Chat** — Click **Contact Support** to start a session. Type messages in real time and wait for an admin response. Close the window to end the session.
+3. **Support Chat** - Click **Contact Support** to start a session. Type messages in real time and wait for an admin response. Close the window to end the session.
 
 ### Admin Workflow
 
@@ -212,11 +212,11 @@ The support engine (`support_manager.py`) manages sessions stored in MongoDB:
 │                                 #   ↳ Admin:  create_client, block, promote, delete, find_account
 ├── 📄 storage.py                 # JSON persistence layer
 │                                 #   ↳ all_clients(), save_clients(), transaction_format()
-├── 📄 data.json                  # Local data store — accounts & transaction history
+├── 📄 data.json                  # Local data store - accounts & transaction history
 ├── 📄 requirements.txt           # Pinned Python dependencies
 ├── 📄 .env                       # MONGO_URI secret (never committed)
 └── 📁 ui_windows/                # All UI screens
-    ├── 📄 support_manager.py     # MongoDB chat engine — session creation, messaging, teardown
+    ├── 📄 support_manager.py     # MongoDB chat engine - session creation, messaging, teardown
     ├── 📄 ui_admin_login.py      # Admin authentication screen
     ├── 📄 ui_admin_panel.py      # Admin dashboard: user table + live chat interface
     ├── 📄 ui_admin_user_table.py # Detailed user management table view
@@ -235,7 +235,7 @@ UI Layer  ── ui_dashboard.py / ui_admin_panel.py
 Business Logic ── models.py  (Client / Admin methods)
         ↓                          ↓
 storage.py                 support_manager.py
-(read/write data.json)     (MongoDB Atlas — ArgumentCapitalChatDB.support_chats)
+(read/write data.json)     (MongoDB Atlas - ArgumentCapitalChatDB.support_chats)
         ↓                          ↓
      JSON file               MongoDB document
         ↓                          ↓
