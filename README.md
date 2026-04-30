@@ -16,6 +16,8 @@ This project addresses the need for a reliable, user-friendly ATM interface that
 
 ---
 
+<a href="https://ibb.co/gZvyhtB7"><img src="https://i.ibb.co/r2bkN51t/image.png" alt="image" border="0"></a>
+
 ## ✨ Key Features
 
 - **Secure User Authentication**: PIN-based login with account blocking after failed attempts.
