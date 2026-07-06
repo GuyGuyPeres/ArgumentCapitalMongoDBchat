@@ -231,15 +231,10 @@ class Admin(Client):
         all_clients = storage.all_clients()
         
         for client_id, client_info in all_clients.items():
-            if BlockVar == True:
-                if client_id == client_toblock:
-                    all_clients[client_id]["blocked_or_not"] = True
-                    storage.save_clients(all_clients)
-                    return True
-                elif BlockVar == False:
-                    all_clients[client_id]["blocked_or_not"] = False
-                    storage.save_clients(all_clients)
-                    return True
+            if client_id == client_toblock:
+                all_clients[client_id]["blocked_or_not"] = BlockVar
+                storage.save_clients(all_clients)
+                return True
         return False
 
     
